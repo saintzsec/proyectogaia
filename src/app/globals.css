@@ -1,0 +1,555 @@
+@import "tailwindcss";
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-gaia-primary: #0baba9;
+  --color-gaia-secondary: #fed705;
+  --color-gaia-tertiary: #f07800;
+  --color-gaia-quaternary: #42b232;
+  --color-gaia-surface: #fdfdfb;
+  --color-gaia-muted: #4b5563;
+  --color-gaia-border: #e5e7eb;
+  --color-gaia-ink: #111827;
+  --radius-gaia: 0.5rem;
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-heading: var(--font-poppins), ui-sans-serif, system-ui, sans-serif;
+}
+
+:root {
+  --background: #fdfdfb;
+  --foreground: #111827;
+  --gaia-surface: #ffffff;
+  --gaia-surface-muted: #f9fafb;
+  --gaia-border: #e5e7eb;
+  --gaia-text-muted: #4b5563;
+}
+
+:root[data-theme="dark"] {
+  --background: #020617;
+  --foreground: #e5e7eb;
+  --gaia-surface: #0b1220;
+  --gaia-surface-muted: #111827;
+  --gaia-border: #1f2937;
+  --gaia-text-muted: #94a3b8;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+  padding-left: env(safe-area-inset-left, 0);
+  padding-right: env(safe-area-inset-right, 0);
+}
+
+.gaia-surface {
+  background: var(--background);
+  color: var(--foreground);
+}
+
+.gaia-card {
+  background: var(--gaia-surface);
+  border-color: var(--gaia-border);
+}
+
+.gaia-muted {
+  color: var(--gaia-text-muted);
+}
+
+.gaia-logo-dark {
+  display: none;
+}
+
+:root[data-theme="dark"] .gaia-logo-light {
+  display: none;
+}
+
+:root[data-theme="dark"] .gaia-logo-dark {
+  display: block;
+}
+
+/* Compatibilidad modo oscuro para utilidades Tailwind existentes */
+:root[data-theme="dark"] .bg-white {
+  background-color: var(--gaia-surface) !important;
+}
+
+:root[data-theme="dark"] .bg-\[\#fdfdfb\],
+:root[data-theme="dark"] .bg-\[\#f9fafb\] {
+  background-color: var(--background) !important;
+}
+
+:root[data-theme="dark"] .border-\[\#e5e7eb\],
+:root[data-theme="dark"] .border-\[\#f3f4f6\] {
+  border-color: var(--gaia-border) !important;
+}
+
+:root[data-theme="dark"] .text-\[\#111827\] {
+  color: var(--foreground) !important;
+}
+
+:root[data-theme="dark"] .text-\[\#374151\],
+:root[data-theme="dark"] .text-\[\#4b5563\],
+:root[data-theme="dark"] .text-\[\#6b7280\] {
+  color: var(--gaia-text-muted) !important;
+}
+
+/* Markdown público (tutoriales, kits, recursos) */
+.gaia-markdown {
+  font-size: 1rem;
+  line-height: 1.65;
+  color: #4b5563;
+}
+
+.gaia-markdown > *:first-child {
+  margin-top: 0;
+}
+
+.gaia-markdown h1,
+.gaia-markdown h2,
+.gaia-markdown h3,
+.gaia-markdown h4 {
+  font-family: var(--font-heading), ui-sans-serif, system-ui, sans-serif;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+/* Títulos con paleta GAIA (Markdown ## ### ####) */
+.gaia-markdown h1 {
+  font-size: 1.5rem;
+  margin: 1.25rem 0 0.5rem;
+  color: #0baba9;
+}
+
+.gaia-markdown h2 {
+  font-size: 1.25rem;
+  margin: 1.5rem 0 0.5rem;
+  color: #0baba9;
+  border-bottom: 1px solid rgba(11, 186, 169, 0.2);
+  padding-bottom: 0.25rem;
+}
+
+.gaia-markdown h3 {
+  font-size: 1.1rem;
+  margin: 1.25rem 0 0.4rem;
+  color: #15803d;
+}
+
+.gaia-markdown h4 {
+  font-size: 1rem;
+  margin: 1rem 0 0.35rem;
+  color: #c2410c;
+}
+
+/* Resaltado inline opcional: <span data-gaia="primary">texto</span> */
+.gaia-markdown span[data-gaia="primary"] {
+  color: #0baba9;
+  font-weight: 600;
+}
+
+.gaia-markdown span[data-gaia="secondary"] {
+  color: #a16207;
+  font-weight: 600;
+}
+
+.gaia-markdown span[data-gaia="tertiary"] {
+  color: #c2410c;
+  font-weight: 600;
+}
+
+.gaia-markdown span[data-gaia="quaternary"] {
+  color: #15803d;
+  font-weight: 600;
+}
+
+.gaia-markdown p {
+  margin: 0 0 0.75rem;
+}
+
+.gaia-markdown ul,
+.gaia-markdown ol {
+  margin: 0.5rem 0 0.85rem;
+  padding-left: 1.35rem;
+}
+
+.gaia-markdown li {
+  margin-bottom: 0.35rem;
+}
+
+.gaia-markdown li > p {
+  margin-bottom: 0.35rem;
+}
+
+.gaia-markdown strong {
+  color: #111827;
+  font-weight: 600;
+}
+
+.gaia-markdown a {
+  color: #0baba9;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.gaia-markdown a:hover {
+  color: #087a78;
+}
+
+.gaia-markdown code {
+  background: #f3f4f6;
+  padding: 0.12em 0.4em;
+  border-radius: 0.25rem;
+  font-size: 0.9em;
+  color: #1f2937;
+}
+
+.gaia-markdown pre {
+  background: #1f2937;
+  color: #f9fafb;
+  padding: 1rem 1.1rem;
+  border-radius: var(--radius-gaia, 0.5rem);
+  overflow-x: auto;
+  margin: 1rem 0;
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
+.gaia-markdown pre code {
+  background: transparent;
+  padding: 0;
+  color: inherit;
+  font-size: inherit;
+}
+
+.gaia-markdown blockquote {
+  border-left: 4px solid #0baba9;
+  margin: 1rem 0;
+  padding: 0.25rem 0 0.25rem 1rem;
+  color: #6b7280;
+}
+
+.gaia-markdown hr {
+  margin: 1.5rem 0;
+  border: 0;
+  border-top: 1px solid #e5e7eb;
+}
+
+.gaia-markdown table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1rem 0;
+  font-size: 0.925rem;
+}
+
+.gaia-markdown th,
+.gaia-markdown td {
+  border: 1px solid #e5e7eb;
+  padding: 0.5rem 0.75rem;
+  text-align: left;
+}
+
+.gaia-markdown th {
+  background: #f9fafb;
+  font-weight: 600;
+  color: #111827;
+}
+
+/* Listados: resumen con markdown sin romper layout de tarjeta */
+.gaia-markdown--compact {
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
+.gaia-markdown--compact h1,
+.gaia-markdown--compact h2,
+.gaia-markdown--compact h3,
+.gaia-markdown--compact h4 {
+  margin-top: 0.45rem;
+  margin-bottom: 0.2rem;
+}
+
+.gaia-markdown--compact h2 {
+  font-size: 1rem;
+}
+
+.gaia-markdown--compact h3 {
+  font-size: 0.95rem;
+}
+
+.gaia-markdown--compact h4 {
+  font-size: 0.9rem;
+}
+
+.gaia-markdown--compact p {
+  margin-bottom: 0.3rem;
+}
+
+.gaia-markdown--compact ul,
+.gaia-markdown--compact ol {
+  margin: 0.3rem 0 0.45rem;
+}
+
+.gaia-markdown--compact li {
+  margin-bottom: 0.15rem;
+}
+
+/* Imágenes Markdown: componente GaiaMarkdownImage (responsive + tope opcional por width) */
+.gaia-markdown-image-wrap {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  margin: 0.75rem 0;
+  text-align: center;
+}
+
+.gaia-markdown-image-img {
+  height: auto;
+  border-radius: var(--radius-gaia, 0.5rem);
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.gaia-markdown-image-caption {
+  display: block;
+  margin-top: 0.4rem;
+  padding: 0 0.25rem;
+  font-size: 0.875rem;
+  line-height: 1.45;
+  color: #6b7280;
+  text-align: center;
+}
+
+/* TipTap (admin kit editor) */
+.kit-rich-editor .ProseMirror {
+  min-height: var(--kit-editor-min-h, 12rem);
+}
+
+.kit-rich-editor .ProseMirror p.is-editor-empty:first-child::before {
+  content: attr(data-placeholder);
+  float: left;
+  color: #9ca3af;
+  pointer-events: none;
+  height: 0;
+}
+
+/* TipTap: formato visible en el editor (coherente con .gaia-markdown público) */
+.kit-rich-editor .ProseMirror strong,
+.kit-rich-editor .ProseMirror b {
+  font-weight: 600;
+  color: #111827;
+}
+
+.kit-rich-editor .ProseMirror em,
+.kit-rich-editor .ProseMirror i {
+  font-style: italic;
+}
+
+.kit-rich-editor .ProseMirror u {
+  text-decoration: underline;
+}
+
+.kit-rich-editor .ProseMirror s,
+.kit-rich-editor .ProseMirror strike,
+.kit-rich-editor .ProseMirror del {
+  text-decoration: line-through;
+}
+
+.kit-rich-editor .ProseMirror h2,
+.kit-rich-editor .ProseMirror h3,
+.kit-rich-editor .ProseMirror h4 {
+  font-family: var(--font-heading), ui-sans-serif, system-ui, sans-serif;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.kit-rich-editor .ProseMirror h2 {
+  font-size: 1.25rem;
+  margin: 1rem 0 0.35rem;
+  color: #0baba9;
+  border-bottom: 1px solid rgba(11, 186, 169, 0.2);
+  padding-bottom: 0.2rem;
+}
+
+.kit-rich-editor .ProseMirror h3 {
+  font-size: 1.1rem;
+  margin: 0.85rem 0 0.3rem;
+  color: #15803d;
+}
+
+.kit-rich-editor .ProseMirror h4 {
+  font-size: 1rem;
+  margin: 0.65rem 0 0.25rem;
+  color: #c2410c;
+}
+
+.kit-rich-editor .ProseMirror a {
+  color: #0baba9;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  cursor: text;
+}
+
+.kit-rich-editor .ProseMirror ul,
+.kit-rich-editor .ProseMirror ol {
+  margin: 0.5rem 0 0.75rem;
+  padding-left: 1.35rem;
+}
+
+.kit-rich-editor .ProseMirror li {
+  margin-bottom: 0.35rem;
+}
+
+.kit-rich-editor .ProseMirror li p {
+  margin-bottom: 0.25rem;
+}
+
+.kit-rich-editor .ProseMirror blockquote {
+  border-left: 4px solid #0baba9;
+  margin: 0.75rem 0;
+  padding: 0.2rem 0 0.2rem 1rem;
+  color: #6b7280;
+}
+
+.kit-rich-editor .ProseMirror code {
+  background: #f3f4f6;
+  padding: 0.12em 0.35em;
+  border-radius: 0.25rem;
+  font-size: 0.9em;
+  color: #1f2937;
+}
+
+.kit-rich-editor .ProseMirror pre {
+  background: #1f2937;
+  color: #f9fafb;
+  padding: 0.75rem 1rem;
+  border-radius: var(--radius-gaia, 0.5rem);
+  overflow-x: auto;
+  margin: 0.75rem 0;
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
+.kit-rich-editor .ProseMirror pre code {
+  background: transparent;
+  padding: 0;
+  color: inherit;
+  font-size: inherit;
+}
+
+.kit-rich-editor .ProseMirror span[data-gaia="primary"] {
+  color: #0baba9;
+  font-weight: 600;
+}
+
+.kit-rich-editor .ProseMirror span[data-gaia="secondary"] {
+  color: #a16207;
+  font-weight: 600;
+}
+
+.kit-rich-editor .ProseMirror span[data-gaia="tertiary"] {
+  color: #c2410c;
+  font-weight: 600;
+}
+
+.kit-rich-editor .ProseMirror span[data-gaia="quaternary"] {
+  color: #15803d;
+  font-weight: 600;
+}
+
+/* Notificación «guardado» (paneles admin / docente) */
+@keyframes gaia-save-toast-in {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -0.85rem) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0) scale(1);
+  }
+}
+
+@keyframes gaia-save-toast-out {
+  from {
+    opacity: 1;
+    transform: translate(-50%, 0) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translate(-50%, -0.5rem) scale(0.98);
+  }
+}
+
+.gaia-save-toast-enter {
+  animation: gaia-save-toast-in 0.42s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.gaia-save-toast-leave {
+  animation: gaia-save-toast-out 0.28s ease-in forwards;
+}
+
+/* Aviso inline en paneles (p. ej. panel líder clase) */
+@keyframes gaia-panel-section-notice-in {
+  from {
+    opacity: 0;
+    transform: translateY(-0.35rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.gaia-panel-section-notice {
+  animation: gaia-panel-section-notice-in 0.4s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+@keyframes gaia-wave-flow {
+  0% {
+    transform: translateX(0) translateY(0);
+  }
+  50% {
+    transform: translateX(1.5%) translateY(-0.4rem);
+  }
+  100% {
+    transform: translateX(0) translateY(0);
+  }
+}
+
+.gaia-wave-layer {
+  animation: gaia-wave-flow 9.5s ease-in-out infinite;
+}
+
+.gaia-wave-layer--delay {
+  animation-delay: -3s;
+}
+
+.gaia-wave-layer--slow {
+  animation-duration: 13s;
+}
+
+@keyframes gaia-skeleton-shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+.gaia-skeleton {
+  background: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--gaia-surface-muted) 90%, transparent) 25%,
+    color-mix(in srgb, var(--gaia-border) 70%, white 30%) 50%,
+    color-mix(in srgb, var(--gaia-surface-muted) 90%, transparent) 75%
+  );
+  background-size: 220% 100%;
+  animation: gaia-skeleton-shimmer 1.2s linear infinite;
+  border-radius: 0.5rem;
+}
