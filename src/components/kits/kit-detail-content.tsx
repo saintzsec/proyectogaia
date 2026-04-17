@@ -33,7 +33,7 @@ function Block({ title, body }: { title: string; body: string | null }) {
       <h2 className="font-[family-name:var(--font-heading)] text-xl font-semibold text-[#111827]">
         {title}
       </h2>
-      <div className="mt-3 text-[#4b5563] leading-relaxed [&_.gaia-markdown]:leading-relaxed">
+      <div className="mt-3 text-[var(--foreground)] leading-relaxed [&_.gaia-markdown]:leading-relaxed">
         <GaiaMarkdown>{body}</GaiaMarkdown>
       </div>
     </section>
@@ -67,7 +67,7 @@ export function KitDetailContent({
         {kit.name}
       </h1>
       {kit.description?.trim() ? (
-        <div className="mt-4 text-lg leading-relaxed text-[#4b5563] [&_.gaia-markdown]:text-lg [&_.gaia-markdown]:leading-relaxed">
+        <div className="mt-4 text-lg leading-relaxed text-[var(--foreground)] [&_.gaia-markdown]:text-lg [&_.gaia-markdown]:leading-relaxed">
           <GaiaMarkdown>{kit.description}</GaiaMarkdown>
         </div>
       ) : null}

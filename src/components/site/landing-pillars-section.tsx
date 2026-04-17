@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { Card, CardDescription, CardTitle } from "@/components/ui/card";
 
 export function LandingPillarsSection() {
@@ -16,18 +17,72 @@ export function LandingPillarsSection() {
         </p>
         <div className="mt-10 grid gap-6 md:grid-cols-3">
           <Card>
+            <div className="mb-4 flex items-center justify-center">
+              <Image
+                src="/brand/student-icon-orange.svg"
+                alt=""
+                width={56}
+                height={56}
+                className="gaia-logo-light h-14 w-14"
+                aria-hidden
+              />
+              <Image
+                src="/brand/student-icon-white.svg"
+                alt=""
+                width={56}
+                height={56}
+                className="gaia-logo-dark h-14 w-14"
+                aria-hidden
+              />
+            </div>
             <CardTitle>Estudiantes</CardTitle>
             <CardDescription>
               Aprenden haciendo, documentando y comunicando como en un laboratorio escolar moderno.
             </CardDescription>
           </Card>
           <Card>
+            <div className="mb-4 flex items-center justify-center">
+              <Image
+                src="/brand/teacher-icon-green.svg"
+                alt=""
+                width={56}
+                height={56}
+                className="gaia-logo-light h-14 w-14"
+                aria-hidden
+              />
+              <Image
+                src="/brand/teacher-icon-white.svg"
+                alt=""
+                width={56}
+                height={56}
+                className="gaia-logo-dark h-14 w-14"
+                aria-hidden
+              />
+            </div>
             <CardTitle>Docentes</CardTitle>
             <CardDescription>
               Talleres, asistencia, rúbricas y evidencias en un solo flujo pensado para el piloto.
             </CardDescription>
           </Card>
           <Card>
+            <div className="mb-4 flex items-center justify-center">
+              <Image
+                src="/brand/scalability-icon-turquoise.svg"
+                alt=""
+                width={56}
+                height={56}
+                className="gaia-logo-light h-14 w-14"
+                aria-hidden
+              />
+              <Image
+                src="/brand/scalability-icon-white.svg"
+                alt=""
+                width={56}
+                height={56}
+                className="gaia-logo-dark h-14 w-14"
+                aria-hidden
+              />
+            </div>
             <CardTitle>Escalabilidad</CardTitle>
             <CardDescription>
               Base lista para más kits y colegios; el sitio público está pensado también para verse bien en celular.

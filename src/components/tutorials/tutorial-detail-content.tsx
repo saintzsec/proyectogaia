@@ -39,7 +39,7 @@ export function TutorialDetailContent({
         {tutorial.title}
       </h1>
       {tutorial.description ? (
-        <p className="mt-4 text-lg text-[#4b5563]">{tutorial.description}</p>
+        <p className="mt-4 text-lg text-[var(--foreground)]">{tutorial.description}</p>
       ) : null}
       <div className="mt-4 flex flex-wrap items-center gap-2">
         <Badge className="bg-[#fed705]/25 text-[#92400e]">

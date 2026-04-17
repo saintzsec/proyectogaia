@@ -7,8 +7,6 @@ export type NavItem = { href: string; label: string; external?: boolean };
 
 export const PUBLIC_MAIN_NAV: NavItem[] = [
   { href: "/sobre", label: "Sobre GAIA" },
-  { href: "/que-hacemos", label: "Qué hacemos" },
-  { href: "/como-funciona", label: "Cómo funciona" },
   { href: "/proyectos", label: "Proyectos" },
   { href: "/recursos", label: "Recursos" },
   { href: "/minitutoriales", label: "Minitutoriales" },

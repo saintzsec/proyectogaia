@@ -1,10 +1,21 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { PUBLIC_MAIN_NAV } from "@/config/navigation";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
+import { cn } from "@/lib/utils";
+
+function linkActive(pathname: string, href: string) {
+  if (href === "/") return pathname === href;
+  return pathname === href || pathname.startsWith(`${href}/`);
+}
 
 export function PublicHeader() {
+  const pathname = usePathname();
+
   return (
     <header className="gaia-surface sticky top-0 z-40 border-b border-[var(--gaia-border)]/80 bg-[var(--gaia-surface)]/90 pt-[env(safe-area-inset-top,0)] backdrop-blur">
       <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 py-3 md:gap-4 md:px-6">
@@ -37,7 +48,13 @@ export function PublicHeader() {
               key={item.href}
               href={item.href}
               prefetch
-              className="transition-colors hover:text-[#0baba9]"
+              className={cn(
+                "rounded-md px-2 py-1 transition-colors",
+                linkActive(pathname, item.href)
+                  ? "bg-[#0baba9]/15 text-[#0baba9]"
+                  : "hover:bg-[#0baba9]/10 hover:text-[#0baba9]",
+              )}
+              aria-current={linkActive(pathname, item.href) ? "page" : undefined}
             >
               {item.label}
             </Link>
@@ -72,7 +89,13 @@ export function PublicHeader() {
             key={item.href}
             href={item.href}
             prefetch
-            className="shrink-0 whitespace-nowrap py-1.5"
+            className={cn(
+              "shrink-0 whitespace-nowrap rounded-md px-2 py-1.5 transition-colors",
+              linkActive(pathname, item.href)
+                ? "bg-[#0baba9]/15 text-[#0baba9]"
+                : "hover:bg-[#0baba9]/10 hover:text-[#0baba9]",
+            )}
+            aria-current={linkActive(pathname, item.href) ? "page" : undefined}
           >
             {item.label}
           </Link>

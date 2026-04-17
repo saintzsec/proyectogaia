@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 
 export function PublicFooter() {
@@ -5,9 +6,13 @@ export function PublicFooter() {
     <footer className="border-t border-[#e5e7eb] bg-[#111827] text-[#e5e7eb]">
       <div className="mx-auto flex max-w-6xl flex-col gap-6 px-4 py-10 md:flex-row md:items-start md:justify-between md:px-6">
         <div>
-          <p className="font-[family-name:var(--font-heading)] text-lg font-semibold text-white">
-            GAIA
-          </p>
+          <Image
+            src="/brand/gaia-logo-dark.svg"
+            alt="GAIA"
+            width={148}
+            height={40}
+            className="h-10 w-auto"
+          />
           <p className="mt-2 max-w-sm text-sm text-[#d1d5db]">
             Plataforma abierta para ciencia aplicada, sostenibilidad y aprendizaje basado en
             proyectos.

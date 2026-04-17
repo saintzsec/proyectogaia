@@ -28,8 +28,9 @@ export const metadata: Metadata = {
   description:
     "Plataforma educativa abierta: kits científicos, PBL y herramientas para docentes. Proyecto piloto: filtro biológico de agua.",
   icons: {
-    icon: "/brand/gaia-icon.png",
-    apple: "/brand/gaia-icon.png",
+    icon: "/brand/gaia-tab-icon.png",
+    shortcut: "/brand/gaia-tab-icon.png",
+    apple: "/brand/gaia-tab-icon.png",
   },
 };
 
@@ -39,7 +40,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="es" className="scroll-smooth">
+    <html lang="es" className="scroll-smooth" suppressHydrationWarning>
       <head>
         <script
           dangerouslySetInnerHTML={{

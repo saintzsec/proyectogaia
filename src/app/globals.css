@@ -31,7 +31,7 @@
   --gaia-surface: #0b1220;
   --gaia-surface-muted: #111827;
   --gaia-border: #1f2937;
-  --gaia-text-muted: #94a3b8;
+  --gaia-text-muted: #cbd5e1;
 }
 
 html {
@@ -98,11 +98,35 @@ body {
   color: var(--gaia-text-muted) !important;
 }
 
+/* Lectura global en modo oscuro para contenidos largos (artículos, listas, párrafos). */
+:root[data-theme="dark"] article {
+  color: var(--foreground);
+}
+
+:root[data-theme="dark"] article p,
+:root[data-theme="dark"] article li,
+:root[data-theme="dark"] article ol,
+:root[data-theme="dark"] article ul {
+  color: inherit;
+}
+
+:root[data-theme="dark"] article .text-\[\#4b5563\],
+:root[data-theme="dark"] article .text-\[\#374151\],
+:root[data-theme="dark"] article .text-\[\#6b7280\] {
+  color: #e2e8f0 !important;
+}
+
+:root[data-theme="dark"] .text-\[\#92400e\],
+:root[data-theme="dark"] .text-\[\#a16207\],
+:root[data-theme="dark"] .text-\[\#c2410c\] {
+  color: #fdba74 !important;
+}
+
 /* Markdown público (tutoriales, kits, recursos) */
 .gaia-markdown {
   font-size: 1rem;
   line-height: 1.65;
-  color: #4b5563;
+  color: var(--foreground);
 }
 
 .gaia-markdown > *:first-child {
@@ -185,7 +209,7 @@ body {
 }
 
 .gaia-markdown strong {
-  color: #111827;
+  color: inherit;
   font-weight: 600;
 }
 
@@ -199,12 +223,40 @@ body {
   color: #087a78;
 }
 
+:root[data-theme="dark"] .gaia-markdown h1,
+:root[data-theme="dark"] .gaia-markdown h2,
+:root[data-theme="dark"] .gaia-markdown span[data-gaia="primary"] {
+  color: #5eead4;
+}
+
+:root[data-theme="dark"] .gaia-markdown h3,
+:root[data-theme="dark"] .gaia-markdown span[data-gaia="quaternary"] {
+  color: #86efac;
+}
+
+:root[data-theme="dark"] .gaia-markdown h4,
+:root[data-theme="dark"] .gaia-markdown span[data-gaia="tertiary"] {
+  color: #fdba74;
+}
+
+:root[data-theme="dark"] .gaia-markdown span[data-gaia="secondary"] {
+  color: #fde68a;
+}
+
+:root[data-theme="dark"] .gaia-markdown a {
+  color: #67e8f9;
+}
+
+:root[data-theme="dark"] .gaia-markdown a:hover {
+  color: #a5f3fc;
+}
+
 .gaia-markdown code {
-  background: #f3f4f6;
+  background: var(--gaia-surface-muted);
   padding: 0.12em 0.4em;
   border-radius: 0.25rem;
   font-size: 0.9em;
-  color: #1f2937;
+  color: var(--foreground);
 }
 
 .gaia-markdown pre {
@@ -229,13 +281,13 @@ body {
   border-left: 4px solid #0baba9;
   margin: 1rem 0;
   padding: 0.25rem 0 0.25rem 1rem;
-  color: #6b7280;
+  color: var(--gaia-text-muted);
 }
 
 .gaia-markdown hr {
   margin: 1.5rem 0;
   border: 0;
-  border-top: 1px solid #e5e7eb;
+  border-top: 1px solid var(--gaia-border);
 }
 
 .gaia-markdown table {
@@ -247,15 +299,15 @@ body {
 
 .gaia-markdown th,
 .gaia-markdown td {
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--gaia-border);
   padding: 0.5rem 0.75rem;
   text-align: left;
 }
 
 .gaia-markdown th {
-  background: #f9fafb;
+  background: var(--gaia-surface-muted);
   font-weight: 600;
-  color: #111827;
+  color: var(--foreground);
 }
 
 /* Listados: resumen con markdown sin romper layout de tarjeta */
