@@ -1,4 +1,5 @@
 import { requireUser } from "@/lib/auth";
+import { AdminGroupsTable } from "@/components/admin/admin-groups-table";
 
 export const dynamic = "force-dynamic";
 
@@ -7,8 +8,18 @@ export default async function AdminGruposPage() {
 
   const { data: groups } = await supabase
     .from("student_groups")
-    .select("id, name, grade_level, academic_year, schools(name), teachers(profile_id)")
+    .select("id, name, school_id, teacher_id, grade_level, academic_year, schools(name), teachers(profile_id)")
     .order("created_at", { ascending: false });
+
+  const { data: schools } = await supabase.from("schools").select("id, name").order("name");
+  const { data: teachers } = await supabase.from("teachers").select("id, profile_id").order("created_at");
+  const { data: profiles } = await supabase
+    .from("profiles")
+    .select("id, full_name")
+    .eq("role", "docente")
+    .order("full_name");
+
+  const profileNameById = new Map((profiles ?? []).map((p) => [p.id, p.full_name]));
 
   return (
     <div className="space-y-6">
@@ -22,52 +33,40 @@ export default async function AdminGruposPage() {
         </p>
       </div>
 
-      <div className="overflow-x-auto rounded-[var(--radius-gaia)] border border-[#e5e7eb] bg-white">
-        <table className="min-w-full text-left text-sm">
-          <thead className="border-b border-[#e5e7eb] bg-[#f9fafb] text-xs uppercase text-[#6b7280]">
-            <tr>
-              <th className="px-4 py-3">Grupo</th>
-              <th className="px-4 py-3">Colegio</th>
-              <th className="px-4 py-3">Nivel</th>
-              <th className="px-4 py-3">Año</th>
-              <th className="px-4 py-3">Docente (perfil)</th>
-            </tr>
-          </thead>
-          <tbody>
-            {groups?.length ? (
-              groups.map((g) => {
-                const rawS = g.schools as unknown;
-                const school = (Array.isArray(rawS) ? rawS[0] : rawS) as
-                  | { name: string }
-                  | null
-                  | undefined;
-                const rawT = g.teachers as unknown;
-                const teacher = (Array.isArray(rawT) ? rawT[0] : rawT) as
-                  | { profile_id: string }
-                  | null
-                  | undefined;
-                return (
-                  <tr key={g.id} className="border-b border-[#f3f4f6]">
-                    <td className="px-4 py-3 font-medium text-[#111827]">{g.name}</td>
-                    <td className="px-4 py-3 text-[#4b5563]">{school?.name ?? "—"}</td>
-                    <td className="px-4 py-3 text-[#4b5563]">{g.grade_level ?? "—"}</td>
-                    <td className="px-4 py-3 text-[#4b5563]">{g.academic_year}</td>
-                    <td className="px-4 py-3 font-mono text-xs text-[#9ca3af]">
-                      {teacher?.profile_id ?? "—"}
-                    </td>
-                  </tr>
-                );
-              })
-            ) : (
-              <tr>
-                <td colSpan={5} className="px-4 py-6 text-center text-[#6b7280]">
-                  Sin grupos registrados.
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
-      </div>
+      <AdminGroupsTable
+        groups={
+          groups?.map((g) => {
+            const rawS = g.schools as unknown;
+            const school = (Array.isArray(rawS) ? rawS[0] : rawS) as { name: string } | null | undefined;
+            const rawT = g.teachers as unknown;
+            const teacher = (Array.isArray(rawT) ? rawT[0] : rawT) as
+              | { profile_id: string }
+              | null
+              | undefined;
+            const teacherProfileId = teacher?.profile_id ?? null;
+
+            return {
+              id: g.id,
+              name: g.name,
+              school_id: g.school_id,
+              school_name: school?.name ?? null,
+              grade_level: g.grade_level,
+              academic_year: g.academic_year,
+              teacher_id: g.teacher_id,
+              teacher_profile_id: teacherProfileId,
+              teacher_name: teacherProfileId ? (profileNameById.get(teacherProfileId) ?? null) : null,
+            };
+          }) ?? []
+        }
+        schools={schools?.map((s) => ({ id: s.id, label: s.name })) ?? []}
+        teachers={
+          teachers?.map((t) => ({
+            id: t.id,
+            profile_id: t.profile_id,
+            label: `${profileNameById.get(t.profile_id) ?? "Sin nombre"} · ${t.profile_id.slice(0, 8)}…`,
+          })) ?? []
+        }
+      />
     </div>
   );
 }

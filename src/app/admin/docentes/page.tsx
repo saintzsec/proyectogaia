@@ -1,5 +1,6 @@
 import { requireUser } from "@/lib/auth";
 import { AssignTeacherForm } from "@/components/admin/assign-teacher-form";
+import { LinkedTeachersTable } from "@/components/admin/linked-teachers-table";
 import { PromoteAdminForm } from "@/components/admin/promote-admin-form";
 import { Card, CardDescription, CardTitle } from "@/components/ui/card";
 
@@ -10,7 +11,7 @@ export default async function AdminDocentesPage() {
 
   const { data: teachers } = await supabase
     .from("teachers")
-    .select("id, profile_id, schools(name), active")
+    .select("id, profile_id, school_id, schools(name), active")
     .order("created_at", { ascending: false });
 
   const { data: profiles } = await supabase
@@ -74,41 +75,24 @@ export default async function AdminDocentesPage() {
 
       <div>
         <h2 className="text-lg font-semibold text-[#111827]">Docentes vinculados</h2>
-        <div className="mt-4 overflow-x-auto rounded-[var(--radius-gaia)] border border-[#e5e7eb] bg-white">
-          <table className="min-w-full text-left text-sm">
-            <thead className="border-b border-[#e5e7eb] bg-[#f9fafb] text-xs uppercase text-[#6b7280]">
-              <tr>
-                <th className="px-4 py-3">Colegio</th>
-                <th className="px-4 py-3">Perfil</th>
-                <th className="px-4 py-3">Activo</th>
-              </tr>
-            </thead>
-            <tbody>
-              {teachers?.length ? (
-                teachers.map((t) => {
-                  const raw = t.schools as unknown;
-                  const school = (Array.isArray(raw) ? raw[0] : raw) as
-                    | { name: string }
-                    | null
-                    | undefined;
-                  return (
-                    <tr key={t.id} className="border-b border-[#f3f4f6]">
-                      <td className="px-4 py-3">{school?.name ?? "—"}</td>
-                      <td className="px-4 py-3 font-mono text-xs text-[#4b5563]">{t.profile_id}</td>
-                      <td className="px-4 py-3">{t.active ? "Sí" : "No"}</td>
-                    </tr>
-                  );
-                })
-              ) : (
-                <tr>
-                  <td colSpan={3} className="px-4 py-6 text-center text-[#6b7280]">
-                    Sin docentes vinculados.
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
+        <LinkedTeachersTable
+          teachers={
+            (profiles ?? []).map((p) => {
+              const link = teachers?.find((t) => t.profile_id === p.id) ?? null;
+              const raw = link?.schools as unknown;
+              const school = (Array.isArray(raw) ? raw[0] : raw) as { name: string } | null | undefined;
+              return {
+                profile_id: p.id,
+                teacher_id: link?.id ?? null,
+                teacher_name: p.full_name ?? null,
+                active: link?.active ?? null,
+                school_id: link?.school_id ?? null,
+                school_name: school?.name ?? null,
+              };
+            }) ?? []
+          }
+          schools={schoolOpts}
+        />
       </div>
     </div>
   );

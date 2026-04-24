@@ -8,8 +8,25 @@ import { gaiaMarkdownSanitizeSchema } from "@/components/markdown/gaia-markdown-
 import { cn } from "@/lib/utils";
 
 const gaiaMarkdownComponents: Components = {
-  img: ({ src, alt, title, width, height }) => (
-    <GaiaMarkdownImage src={src} alt={alt} title={title} width={width} height={height} />
+  img: ({ src, alt, title, width, height, node }) => {
+    const props = (node?.properties ?? {}) as Record<string, unknown>;
+    const alignRaw = String(props.dataAlign ?? "center");
+    const sizeRaw = String(props.dataSize ?? "medium");
+    const align = ["left", "center", "right"].includes(alignRaw) ? (alignRaw as "left" | "center" | "right") : "center";
+    const size = ["small", "medium", "large"].includes(sizeRaw) ? (sizeRaw as "small" | "medium" | "large") : "medium";
+    return (
+      <GaiaMarkdownImage src={src} alt={alt} title={title} width={width} height={height} align={align} size={size} />
+    );
+  },
+  a: ({ href, children }) => (
+    <a
+      href={href}
+      target="_blank"
+      rel="noreferrer noopener"
+      className="gaia-markdown-link-button"
+    >
+      {children}
+    </a>
   ),
 };
 

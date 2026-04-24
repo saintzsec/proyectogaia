@@ -1,9 +1,11 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { requireUser } from "@/lib/auth";
+import { ProjectQuizForm } from "@/components/admin/project-quiz-form";
 import { RubricCriterionForm } from "@/components/admin/rubric-criterion-form";
 import { RubricMetaForm } from "@/components/admin/rubric-meta-form";
 import { Card, CardDescription, CardTitle } from "@/components/ui/card";
+import { parseProjectQuizConfig } from "@/lib/quiz/project-quiz";
 
 export const dynamic = "force-dynamic";
 
@@ -25,10 +27,18 @@ export default async function AdminRubricDetailPage({ params }: Props) {
     .select("id, label, description, max_score, sort_order")
     .eq("rubric_id", id)
     .order("sort_order");
+  const { data: kits } = await supabase.from("kit_projects").select("id, name").order("name");
 
   const rawKp = rubric.kit_projects as unknown;
   const kp = (Array.isArray(rawKp) ? rawKp[0] : rawKp) as { name: string } | null | undefined;
   const maxTotal = criteria?.reduce((acc, c) => acc + c.max_score, 0) ?? 0;
+  const { data: kitProject } = rubric.kit_project_id
+    ? await supabase
+        .from("kit_projects")
+        .select("id, quiz_questions")
+        .eq("id", rubric.kit_project_id)
+        .maybeSingle()
+    : { data: null };
 
   return (
     <div className="space-y-8">
@@ -57,8 +67,10 @@ export default async function AdminRubricDetailPage({ params }: Props) {
               id: rubric.id,
               name: rubric.name,
               version: rubric.version,
+              kit_project_id: rubric.kit_project_id,
               is_active: rubric.is_active,
             }}
+            kits={kits ?? []}
           />
         </div>
       </Card>
@@ -105,6 +117,26 @@ export default async function AdminRubricDetailPage({ params }: Props) {
         <div className="mt-8">
           <p className="mb-3 text-sm font-medium text-[#111827]">Añadir criterio</p>
           <RubricCriterionForm rubricId={rubric.id} />
+        </div>
+      </Card>
+
+      <Card>
+        <CardTitle>Quiz del proyecto</CardTitle>
+        <CardDescription>
+          Edita preguntas y respuestas del quiz que completan los estudiantes en el panel del grupo.
+          Cada pregunta correcta vale 1 punto.
+        </CardDescription>
+        <div className="mt-6">
+          {kitProject?.id ? (
+            <ProjectQuizForm
+              kitProjectId={kitProject.id}
+              initialQuestions={parseProjectQuizConfig((kitProject as { quiz_questions?: unknown }).quiz_questions)}
+            />
+          ) : (
+            <p className="text-sm text-[#6b7280]">
+              Esta rúbrica no tiene un proyecto asociado, por eso no se puede configurar quiz.
+            </p>
+          )}
         </div>
       </Card>
     </div>

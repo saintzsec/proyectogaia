@@ -43,7 +43,21 @@ export default async function AdminProyectosPage() {
                 <tr key={k.id} className="border-b border-[#f3f4f6]">
                   <td className="px-4 py-3 font-medium text-[#111827]">{k.name}</td>
                   <td className="px-4 py-3 font-mono text-xs text-[#6b7280]">{k.slug}</td>
-                  <td className="px-4 py-3">{k.is_published ? "Publicado" : "Borrador"}</td>
+                  <td className="px-4 py-3">
+                    {k.is_published === true ? (
+                      <span className="inline-flex rounded-full bg-[#dcfce7] px-2.5 py-1 text-xs font-medium text-[#166534]">
+                        Publicado
+                      </span>
+                    ) : k.is_published === false ? (
+                      <span className="inline-flex rounded-full bg-[#fef3c7] px-2.5 py-1 text-xs font-medium text-[#92400e]">
+                        Sin publicar
+                      </span>
+                    ) : (
+                      <span className="inline-flex rounded-full bg-[#fde2e8] px-2.5 py-1 text-xs font-medium text-[#7f1d1d]">
+                        Oculto
+                      </span>
+                    )}
+                  </td>
                   <td className="px-4 py-3">
                     <Link
                       href={`/admin/proyectos/${k.id}`}

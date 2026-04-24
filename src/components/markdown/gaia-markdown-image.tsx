@@ -24,13 +24,23 @@ function isSafeHttpUrl(src: string): boolean {
  * Imágenes en contenido Markdown de kits/recursos: ancho máximo acotado cuando hay
  * `width` (p. ej. desde HTML), siempre `max-width: 100%` del contenedor para móvil.
  */
+type GaiaMarkdownImageProps = Pick<
+  ImgHTMLAttributes<HTMLImageElement>,
+  "src" | "alt" | "title" | "width" | "height"
+> & {
+  align?: "left" | "center" | "right";
+  size?: "small" | "medium" | "large";
+};
+
 export function GaiaMarkdownImage({
   src,
   alt,
   title,
   width,
   height,
-}: Pick<ImgHTMLAttributes<HTMLImageElement>, "src" | "alt" | "title" | "width" | "height">) {
+  align = "center",
+  size = "medium",
+}: GaiaMarkdownImageProps) {
   if (!src || typeof src !== "string" || !isSafeHttpUrl(src)) {
     return null;
   }
@@ -52,7 +62,7 @@ export function GaiaMarkdownImage({
   }
 
   return (
-    <span className="gaia-markdown-image-wrap">
+    <span className={`gaia-markdown-image-wrap is-${align} is-${size}`}>
       {/* URLs de terceros en contenido admin: next/image exige dominios en remotePatterns */}
       {/* eslint-disable-next-line @next/next/no-img-element -- imágenes arbitrarias https en markdown */}
       <img

@@ -1,5 +1,5 @@
-import Link from "next/link";
 import { requireUser } from "@/lib/auth";
+import { RubricsTable } from "@/components/admin/rubrics-table";
 
 export const dynamic = "force-dynamic";
 
@@ -9,6 +9,7 @@ export default async function AdminRubricasPage() {
     .from("rubrics")
     .select("id, name, version, is_active, kit_projects(name)")
     .order("name");
+  const { data: kits } = await supabase.from("kit_projects").select("id, name").order("name");
 
   return (
     <div className="space-y-8">
@@ -21,49 +22,22 @@ export default async function AdminRubricasPage() {
           metadatos y añade criterios desde el detalle.
         </p>
       </div>
-      <div className="overflow-x-auto rounded-[var(--radius-gaia)] border border-[#e5e7eb] bg-white">
-        <table className="min-w-full text-left text-sm">
-          <thead className="border-b border-[#e5e7eb] bg-[#f9fafb] text-xs uppercase text-[#6b7280]">
-            <tr>
-              <th className="px-4 py-3">Nombre</th>
-              <th className="px-4 py-3">Kit</th>
-              <th className="px-4 py-3">Versión</th>
-              <th className="px-4 py-3">Activa</th>
-              <th className="px-4 py-3">Acción</th>
-            </tr>
-          </thead>
-          <tbody>
-            {rubrics?.length ? (
-              rubrics.map((r) => {
-                const raw = r.kit_projects as unknown;
-                const kp = (Array.isArray(raw) ? raw[0] : raw) as { name: string } | null | undefined;
-                return (
-                  <tr key={r.id} className="border-b border-[#f3f4f6]">
-                    <td className="px-4 py-3 font-medium text-[#111827]">{r.name}</td>
-                    <td className="px-4 py-3 text-[#4b5563]">{kp?.name ?? "—"}</td>
-                    <td className="px-4 py-3">{r.version}</td>
-                    <td className="px-4 py-3">{r.is_active ? "Sí" : "No"}</td>
-                    <td className="px-4 py-3">
-                      <Link
-                        href={`/admin/rubricas/${r.id}`}
-                        className="font-medium text-[#0baba9] hover:underline"
-                      >
-                        Gestionar
-                      </Link>
-                    </td>
-                  </tr>
-                );
-              })
-            ) : (
-              <tr>
-                <td colSpan={5} className="px-4 py-6 text-center text-[#6b7280]">
-                  Sin rúbricas. Ejecuta migraciones con semilla.
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
-      </div>
+      <RubricsTable
+        rubrics={
+          rubrics?.map((r) => {
+            const raw = r.kit_projects as unknown;
+            const kp = (Array.isArray(raw) ? raw[0] : raw) as { name: string } | null | undefined;
+            return {
+              id: r.id,
+              name: r.name,
+              version: r.version,
+              is_active: r.is_active,
+              kit_name: kp?.name ?? null,
+            };
+          }) ?? []
+        }
+        kits={kits ?? []}
+      />
     </div>
   );
 }

@@ -12,5 +12,10 @@ export const gaiaMarkdownSanitizeSchema: Schema = {
     span: [
       ["dataGaia", /^(primary|secondary|tertiary|quaternary)$/],
     ],
+    img: [
+      ...(defaultSchema.attributes?.img ?? []),
+      ["dataAlign", /^(left|center|right)$/],
+      ["dataSize", /^(small|medium|large)$/],
+    ],
   },
 };

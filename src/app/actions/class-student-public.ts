@@ -6,6 +6,7 @@ import { z } from "zod";
 import { normalizeJoinCodeInput } from "@/lib/classes/join-code";
 import { isValidPeerScores } from "@/lib/grading/compute-proposed-grade";
 import { PEER_DIMENSION_KEYS } from "@/lib/grading/formula";
+import { parseProjectQuizConfig } from "@/lib/quiz/project-quiz";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { refreshGroupGradeSnapshot } from "@/server/grading/refresh-group-snapshot";
 
@@ -226,10 +227,10 @@ export async function submitPeerEvaluationFormAction(
 
 const quizSchema = z.object({
   leader_token: z.string().uuid(),
-  answers: z.array(z.number().int().min(0).max(3)).length(5),
+  answers: z.array(z.number().int().min(0)).min(1),
 });
 
-/** Quiz fijo 5 preguntas; respuestas como índice 0..3 por pregunta (campos q0..q4). */
+/** Quiz configurable por proyecto; cada respuesta correcta vale 1 punto. */
 export async function submitGroupQuizMvp(formData: FormData) {
   let admin;
   try {
@@ -238,36 +239,65 @@ export async function submitGroupQuizMvp(formData: FormData) {
     return { error: "Configuración del servidor incompleta." };
   }
 
-  const answers = [0, 1, 2, 3, 4].map((i) => Number(formData.get(`q${i}`)));
-  const parsed = quizSchema.safeParse({
-    leader_token: formData.get("leader_token"),
-    answers,
-  });
-  if (!parsed.success) return { error: "Quiz incompleto." };
-
-  const CORRECT = [0, 1, 2, 1, 0];
-  let correct = 0;
-  for (let i = 0; i < 5; i++) {
-    if (parsed.data.answers[i] === CORRECT[i]) correct++;
-  }
-  const score_on_scale = 1 + (correct / 5) * 4;
-  const rounded = Math.round(score_on_scale * 100) / 100;
+  const leaderToken = String(formData.get("leader_token") ?? "");
 
   const { data: leader, error: lErr } = await admin
     .from("class_group_members")
     .select("id, student_group_id, is_leader")
-    .eq("access_token", parsed.data.leader_token)
+    .eq("access_token", leaderToken)
     .maybeSingle();
 
   if (lErr || !leader || !leader.is_leader) {
     return { error: "Solo el líder puede enviar el quiz del grupo." };
   }
 
+  const { data: group } = await admin
+    .from("student_groups")
+    .select("class_id")
+    .eq("id", leader.student_group_id)
+    .maybeSingle();
+  if (!group?.class_id) return { error: "Grupo sin clase asociada." };
+
+  const { data: cls } = await admin
+    .from("classes")
+    .select("kit_project_id")
+    .eq("id", group.class_id)
+    .maybeSingle();
+  if (!cls?.kit_project_id) return { error: "Clase sin proyecto asociado." };
+
+  const { data: kitRow } = await admin
+    .from("kit_projects")
+    .select("quiz_questions")
+    .eq("id", cls.kit_project_id)
+    .maybeSingle();
+  const questions = parseProjectQuizConfig((kitRow as { quiz_questions?: unknown } | null)?.quiz_questions);
+  const answers = questions.map((_, i) => Number(formData.get(`q${i}`)));
+  const parsed = quizSchema.safeParse({
+    leader_token: leaderToken,
+    answers,
+  });
+  if (!parsed.success || parsed.data.answers.length !== questions.length) {
+    return { error: "Quiz incompleto." };
+  }
+
+  let correct = 0;
+  for (let i = 0; i < questions.length; i++) {
+    const q = questions[i]!;
+    const a = parsed.data.answers[i]!;
+    if (!Number.isInteger(a) || a < 0 || a >= q.options.length) {
+      return { error: "Respuesta inválida en el quiz." };
+    }
+    if (a === q.correctIndex) correct++;
+  }
+  const scoreTotal = questions.length;
+  const score_on_scale = 1 + (correct / scoreTotal) * 4;
+  const rounded = Math.round(score_on_scale * 100) / 100;
+
   const { error: qErr } = await admin.from("group_quiz_attempts").upsert(
     {
       student_group_id: leader.student_group_id,
       score_correct: correct,
-      score_total: 5,
+      score_total: scoreTotal,
       score_on_scale_1_5: rounded,
       answers: { choices: parsed.data.answers },
       submitted_at: new Date().toISOString(),

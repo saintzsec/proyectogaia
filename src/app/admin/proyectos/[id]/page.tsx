@@ -12,6 +12,11 @@ export default async function AdminKitEditPage({ params }: Props) {
   const { id } = await params;
   const { supabase } = await requireUser();
   const { data: kit } = await supabase.from("kit_projects").select("*").eq("id", id).maybeSingle();
+  const { data: tutorials } = await supabase
+    .from("tutorials")
+    .select("id, title, slug, sort_order, kit_project_id")
+    .order("sort_order")
+    .order("title");
 
   if (!kit) notFound();
 
@@ -52,7 +57,18 @@ export default async function AdminKitEditPage({ params }: Props) {
           .
         </CardDescription>
         <div className="mt-6">
-          <KitEditForm kit={values} />
+          <KitEditForm
+            kit={values}
+            tutorials={
+              tutorials?.map((t) => ({
+                id: t.id,
+                title: t.title,
+                slug: t.slug,
+                sort_order: t.sort_order,
+                kit_project_id: t.kit_project_id,
+              })) ?? []
+            }
+          />
         </div>
       </Card>
     </div>

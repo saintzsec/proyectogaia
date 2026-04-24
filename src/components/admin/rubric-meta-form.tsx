@@ -10,8 +10,10 @@ import { useSaveToast } from "@/components/ui/save-toast";
 
 export function RubricMetaForm({
   rubric,
+  kits,
 }: {
-  rubric: { id: string; name: string; version: number; is_active: boolean };
+  rubric: { id: string; name: string; version: number; is_active: boolean; kit_project_id: string | null };
+  kits: { id: string; name: string }[];
 }) {
   const router = useRouter();
   const { showSaved } = useSaveToast();
@@ -51,6 +53,23 @@ export function RubricMetaForm({
           defaultValue={rubric.version}
           className="w-24"
         />
+      </div>
+      <div className="space-y-2">
+        <Label htmlFor="kit_project_id">Proyecto asociado</Label>
+        <select
+          id="kit_project_id"
+          name="kit_project_id"
+          title="Seleccionar proyecto asociado"
+          className="h-10 min-w-[240px] rounded-[var(--radius-gaia)] border border-[#e5e7eb] bg-white px-3 text-sm"
+          defaultValue={rubric.kit_project_id ?? ""}
+        >
+          <option value="">— Sin proyecto —</option>
+          {kits.map((k) => (
+            <option key={k.id} value={k.id}>
+              {k.name}
+            </option>
+          ))}
+        </select>
       </div>
       <div className="space-y-2">
         <Label htmlFor="is_active">Activa</Label>

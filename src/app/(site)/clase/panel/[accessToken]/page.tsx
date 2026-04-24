@@ -1,4 +1,5 @@
 import { ClaseStudentPanel } from "@/components/clase/clase-student-panel";
+import { parseProjectQuizConfig } from "@/lib/quiz/project-quiz";
 import { createAdminClient } from "@/lib/supabase/admin";
 
 export const dynamic = "force-dynamic";
@@ -50,6 +51,14 @@ export default async function ClasePanelPage({
 
   const kitName =
     (cls?.kit_projects as { name?: string } | null)?.name ?? "Proyecto";
+  const { data: kitQuiz } = cls?.kit_project_id
+    ? await admin
+        .from("kit_projects")
+        .select("quiz_questions")
+        .eq("id", cls.kit_project_id)
+        .maybeSingle()
+    : { data: null };
+  const quizQuestions = parseProjectQuizConfig((kitQuiz as { quiz_questions?: unknown } | null)?.quiz_questions);
 
   const { data: allMembers } = await admin
     .from("class_group_members")
@@ -131,6 +140,7 @@ export default async function ClasePanelPage({
       kitName={kitName}
       summary={sub?.learning_summary ?? null}
       quizScore={quiz?.score_on_scale_1_5 != null ? Number(quiz.score_on_scale_1_5) : null}
+      quizQuestions={quizQuestions}
       members={allMembers ?? []}
       peerTargetsDone={peerTargetsDone}
       teacherGrade={teacherGrade}

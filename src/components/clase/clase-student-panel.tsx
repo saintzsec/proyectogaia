@@ -11,23 +11,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useSaveToast } from "@/components/ui/save-toast";
+import type { ProjectQuizQuestion } from "@/lib/quiz/project-quiz";
 import { cn } from "@/lib/utils";
-
-const QUIZ_Q = [
-  "¿Qué es un ecosistema acuático en equilibrio?",
-  "¿Cuál es un indicador de calidad del agua?",
-  "El filtro biológico utiliza principalmente:",
-  "La sostenibilidad implica:",
-  "¿Qué documentarías como evidencia del proyecto?",
-];
-
-const QUIZ_OPTS = [
-  ["Solo plantas", "Plantas, bacterias y relaciones entre ellas", "Solo agua limpia", "Solo peces"],
-  ["Color del uniforme", "pH, turbidez, oxígeno disuelto", "Solo temperatura", "Solo olor"],
-  ["Solo arena", "Materia viva que degrada residuos", "Solo cloro", "Solo calor"],
-  ["Usar recursos sin límites", "Satisfacer hoy sin comprometer el mañana", "No medir impactos", "Evitar toda tecnología"],
-  ["Solo el título", "Fotos del proceso y resultados", "Nada", "Solo opinión sin datos"],
-];
 
 type Member = { id: string; display_name: string };
 
@@ -166,6 +151,7 @@ export function ClaseStudentPanel(props: {
   kitName: string;
   summary: string | null;
   quizScore: number | null;
+  quizQuestions: ProjectQuizQuestion[];
   members: Member[];
   peerTargetsDone: Record<string, boolean>;
   teacherGrade: TeacherGradePanelInfo;
@@ -304,10 +290,10 @@ export function ClaseStudentPanel(props: {
                   }
                 }}
               >
-                {QUIZ_Q.map((q, qi) => (
+                {props.quizQuestions.map((q, qi) => (
                   <div key={qi} className="space-y-1">
                     <p id={`quiz-q-label-${qi}`} className="text-sm font-medium text-[#374151]">
-                      {qi + 1}. {q}
+                      {qi + 1}. {q.question}
                     </p>
                     <select
                       name={`q${qi}`}
@@ -316,7 +302,7 @@ export function ClaseStudentPanel(props: {
                       aria-labelledby={`quiz-q-label-${qi}`}
                     >
                       <option value="">—</option>
-                      {QUIZ_OPTS[qi]!.map((opt, oi) => (
+                      {q.options.map((opt, oi) => (
                         <option key={oi} value={oi}>
                           {opt}
                         </option>

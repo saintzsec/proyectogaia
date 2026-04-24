@@ -1,12 +1,16 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { createTutorial, updateTutorial } from "@/app/actions/tutorials-admin";
+import {
+  RichMarkdownEditor,
+  type RichMarkdownEditorRef,
+} from "@/components/editor/rich-markdown-editor";
+import { GaiaMarkdown } from "@/components/markdown/gaia-markdown";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import { useSaveToast } from "@/components/ui/save-toast";
 
 export type KitOption = { id: string; name: string };
@@ -37,12 +41,22 @@ export function TutorialForm({
   const { showSaved } = useSaveToast();
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [preview, setPreview] = useState({
+    title: initial?.title ?? "",
+    slug: initial?.slug ?? "",
+    description: initial?.description ?? "",
+    content_md: initial?.content_md ?? "",
+  });
+  const descriptionRef = useRef<RichMarkdownEditorRef>(null);
+  const contentRef = useRef<RichMarkdownEditorRef>(null);
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setError(null);
     setLoading(true);
     const fd = new FormData(e.currentTarget);
+    fd.set("description", descriptionRef.current?.getMarkdown() ?? "");
+    fd.set("content_md", contentRef.current?.getMarkdown() ?? "");
     const res =
       mode === "create" ? await createTutorial(fd) : await updateTutorial(fd);
     setLoading(false);
@@ -64,11 +78,42 @@ export function TutorialForm({
     <form onSubmit={onSubmit} className="space-y-6">
       {mode === "edit" && initial ? <input type="hidden" name="id" value={initial.id} /> : null}
 
+      <div className="rounded-[var(--radius-gaia)] border border-[#e5e7eb] bg-white p-4">
+        <h2 className="font-[family-name:var(--font-heading)] text-xl font-semibold text-[#111827]">
+          Previsualizacion en vivo del minitutorial
+        </h2>
+        <p className="mt-1 text-sm text-[#6b7280]">
+          Asi se vera la pagina publica con los cambios que estas editando.
+        </p>
+        <div className="mt-4 max-h-[60vh] overflow-y-auto rounded-[var(--radius-gaia)] border border-[#e5e7eb] bg-[#f9fafb] p-4">
+          <p className="text-xs text-[#6b7280]">/minitutoriales/{preview.slug || "tu-slug"}</p>
+          <h3 className="mt-2 font-[family-name:var(--font-heading)] text-2xl font-bold text-[#0baba9]">
+            {preview.title || "Titulo del minitutorial"}
+          </h3>
+          {preview.description.trim() ? (
+            <div className="mt-3">
+              <GaiaMarkdown>{preview.description}</GaiaMarkdown>
+            </div>
+          ) : null}
+          {preview.content_md.trim() ? (
+            <section className="mt-6 border-t border-[#e5e7eb] pt-4">
+              <h4 className="font-[family-name:var(--font-heading)] text-lg font-semibold text-[#111827]">
+                Guia completa
+              </h4>
+              <div className="mt-2">
+                <GaiaMarkdown>{preview.content_md}</GaiaMarkdown>
+              </div>
+            </section>
+          ) : null}
+        </div>
+      </div>
+
       <div className="space-y-2">
         <Label htmlFor="kit_project_id">Kit asociado</Label>
         <select
           id="kit_project_id"
           name="kit_project_id"
+          title="Seleccionar kit asociado"
           className="h-10 w-full max-w-md rounded-[var(--radius-gaia)] border border-[#e5e7eb] bg-white px-3 text-sm"
           defaultValue={initial?.kit_project_id ?? ""}
         >
@@ -84,7 +129,13 @@ export function TutorialForm({
       <div className="grid gap-4 md:grid-cols-2">
         <div className="space-y-2">
           <Label htmlFor="title">Título</Label>
-          <Input id="title" name="title" required defaultValue={initial?.title ?? ""} />
+          <Input
+            id="title"
+            name="title"
+            required
+            defaultValue={initial?.title ?? ""}
+            onChange={(e) => setPreview((p) => ({ ...p, title: e.target.value }))}
+          />
         </div>
         <div className="space-y-2">
           <Label htmlFor="slug">Slug</Label>
@@ -94,6 +145,7 @@ export function TutorialForm({
             required
             placeholder="ej. mi-tutorial"
             defaultValue={initial?.slug ?? ""}
+            onChange={(e) => setPreview((p) => ({ ...p, slug: e.target.value }))}
           />
         </div>
         <div className="space-y-2">
@@ -135,6 +187,7 @@ export function TutorialForm({
           <select
             id="is_public"
             name="is_public"
+            title="Seleccionar visibilidad"
             className="h-10 w-full rounded-[var(--radius-gaia)] border border-[#e5e7eb] bg-white px-3 text-sm"
             defaultValue={initial?.is_public === false ? "false" : "true"}
           >
@@ -144,35 +197,26 @@ export function TutorialForm({
         </div>
       </div>
 
-      <div className="space-y-2">
-        <Label htmlFor="description">Descripción corta</Label>
-        <Textarea
-          id="description"
-          name="description"
-          rows={3}
-          defaultValue={initial?.description ?? ""}
-        />
-      </div>
+      <RichMarkdownEditor
+        ref={descriptionRef}
+        labelId="tutorial-description"
+        label="Descripcion corta"
+        initialValue={initial?.description ?? ""}
+        minHeight="10rem"
+        helperText="Resume brevemente de que trata el minitutorial para mostrarlo en listados."
+        onChange={(value) => setPreview((p) => ({ ...p, description: value }))}
+      />
 
-      <div className="space-y-2">
-        <Label htmlFor="content_md">Guía completa (Markdown)</Label>
-        <Textarea
-          id="content_md"
-          name="content_md"
-          rows={14}
-          placeholder="## Objetivo&#10;…"
-          defaultValue={initial?.content_md ?? ""}
-        />
-        <p className="text-xs text-[#6b7280]">
-          Los encabezados usan colores GAIA automáticamente. Para una palabra clave:{" "}
-          <code className="rounded bg-[#f3f4f6] px-1">
-            &lt;span data-gaia=&quot;primary&quot;&gt;…&lt;/span&gt;
-          </code>{" "}
-          (también <code className="rounded bg-[#f3f4f6] px-1">secondary</code>,{" "}
-          <code className="rounded bg-[#f3f4f6] px-1">tertiary</code>,{" "}
-          <code className="rounded bg-[#f3f4f6] px-1">quaternary</code>). Ver README.
-        </p>
-      </div>
+      <RichMarkdownEditor
+        ref={contentRef}
+        labelId="tutorial-content_md"
+        label="Guia completa del minitutorial"
+        initialValue={initial?.content_md ?? ""}
+        minHeight="18rem"
+        placeholder="## Objetivo..."
+        helperText="Escribe la guia paso a paso. Puedes usar listas, links, imagenes y formato enriquecido."
+        onChange={(value) => setPreview((p) => ({ ...p, content_md: value }))}
+      />
 
       {error ? <p className="text-sm text-red-600">{error}</p> : null}
       <Button type="submit" disabled={loading}>
